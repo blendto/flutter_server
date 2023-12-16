@@ -13,7 +13,6 @@ import 'package:shelf_router/shelf_router.dart' as shelf_router;
 
 import 'models/frames.dart';
 
-const DEFAULT_FPS = 30;
 const port = 52244;
 
 final outputFormatsMap = {
