@@ -1,0 +1,34 @@
+name: flutter_server
+description: A new Flutter project.
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: '>=3.1.3 <4.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  shelf: ^1.4.1
+  shelf_router: ^1.1.4
+  uuid: ^4.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  assets:
+    - assets/
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/NotoSans-Regular.ttf
+  # For details regarding fonts in packages, see
+  # https://flutter.dev/custom-fonts/#from-packages
