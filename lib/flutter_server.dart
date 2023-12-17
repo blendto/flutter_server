@@ -28,8 +28,8 @@ shelf_router.Router generateRouter(TestWidgetsFlutterBinding binding) {
   router.post('/renderImage', (Request req) async {
     final out = await generateWidget(
       binding: binding,
-      size: const Size(1024, 576),
-      renderSize: const Size(1024, 576),
+      size: const Size(576, 1024),
+      renderSize: const Size(576, 1024),
       outputFormat: "mp4",
       fps: 18,
       duration: const Duration(seconds: 10),
@@ -93,7 +93,7 @@ Future<List<int>> generateWidget({
   final GlobalKey key = GlobalKey();
 
   final hero = await binding.runAsync(() => getImage("assets/hero-1.png"));
-  final diner = await binding.runAsync(() => getImage("assets/diner.jpg"));
+  final bgData = await binding.runAsync(() => getImage("assets/bg-neighbourhood.png"));
 
   final widget = View(
     view: binding.platformDispatcher.implicitView!,
@@ -109,7 +109,7 @@ Future<List<int>> generateWidget({
               key: key,
               child: VideoContainer(
                 hero: hero!,
-                bgData: diner!,
+                bgData: bgData!,
               ),
             ),
           ),
@@ -135,7 +135,7 @@ Future<List<int>> generateWidget({
     await binding.pump(perFrameDuration);
   }
   hero.dispose();
-  diner.dispose();
+  bgData.dispose();
   const directoryPrefix = 'outputs/temp';
   const outputPath = '$directoryPrefix/output';
 

@@ -66,7 +66,7 @@ class VideoContainerState extends State<VideoContainer>
     return Align(
       alignment: Alignment.center,
       child: AspectRatio(
-        aspectRatio: 16 / 9,
+        aspectRatio: 9 / 16,
         child: ClipRect(
           child: Stack(
             children: [
