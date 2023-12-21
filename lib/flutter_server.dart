@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -26,10 +27,17 @@ shelf_router.Router generateRouter(TestWidgetsFlutterBinding binding) {
   router.all('/', (req) => Response.ok("Healthy"));
 
   router.post('/renderImage', (Request req) async {
+    final dataStr = await req.readAsString();
+    final data = jsonDecode(dataStr);
+
+    final encodedImage = data["encodedImage"] as String;
+    final userHero = await decodeImageFromList(base64Decode(encodedImage));
+
     final out = await generateWidget(
+      userHero: userHero,
       binding: binding,
-      size: const Size(576, 1024),
-      renderSize: const Size(576, 1024),
+      size: const Size(405, 720),
+      renderSize: const Size(405, 720),
       outputFormat: "mp4",
       fps: 18,
       duration: const Duration(seconds: 10),
@@ -82,6 +90,7 @@ Future<ui.Image> getImage(String key) async {
 }
 
 Future<List<int>> generateWidget({
+  required ui.Image? userHero,
   required TestWidgetsFlutterBinding binding,
   required Size size,
   required Size? renderSize,
@@ -92,8 +101,10 @@ Future<List<int>> generateWidget({
   renderSize ??= size;
   final GlobalKey key = GlobalKey();
 
-  final hero = await binding.runAsync(() => getImage("assets/hero-1.png"));
-  final bgData = await binding.runAsync(() => getImage("assets/bg-neighbourhood.png"));
+  final hero =
+      userHero ?? await binding.runAsync(() => getImage("assets/hero-1.png"));
+  final bgData =
+      await binding.runAsync(() => getImage("assets/bg-neighbourhood.png"));
 
   final widget = View(
     view: binding.platformDispatcher.implicitView!,

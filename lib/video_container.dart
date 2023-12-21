@@ -86,6 +86,19 @@ class VideoContainerState extends State<VideoContainer>
                       );
                     }),
               ),
+              FractionallySizedBox(
+                widthFactor: 1,
+                heightFactor: 0.1,
+                child: Container(color: Colors.black),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: FractionallySizedBox(
+                  widthFactor: 1,
+                  heightFactor: 0.1,
+                  child: Container(color: Colors.black),
+                ),
+              ),
               Align(
                 alignment: Alignment.bottomLeft,
                 child: AnimatedBuilder(
