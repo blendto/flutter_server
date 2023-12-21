@@ -36,8 +36,8 @@ shelf_router.Router generateRouter(TestWidgetsFlutterBinding binding) {
     final out = await generateWidget(
       userHero: userHero,
       binding: binding,
-      size: const Size(405, 720),
-      renderSize: const Size(405, 720),
+      size: const Size(404, 720),
+      renderSize: const Size(404, 720),
       outputFormat: "mp4",
       fps: 18,
       duration: const Duration(seconds: 10),
