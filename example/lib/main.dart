@@ -5,10 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_server/video_container.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(const MainApp());
 }
 
 class MainApp extends StatefulWidget {
+  const MainApp({super.key});
+
   @override
   State<MainApp> createState() => _MainAppState();
 }
@@ -19,10 +21,11 @@ class _MainAppState extends State<MainApp> {
     return decodeImageFromList(byteData.buffer.asUint8List());
   }
 
-  Future<(ui.Image, ui.Image)> getImages() async {
+  Future<(ui.Image, ui.Image, ui.Image)> getImages() async {
     final hero = await getImage("assets/hero-1.png");
     final diner = await getImage("assets/diner.jpg");
-    return (hero, diner);
+    final frame = await getImage("assets/frame.png");
+    return (hero, diner, frame);
   }
 
   @override
@@ -41,7 +44,13 @@ class _MainAppState extends State<MainApp> {
             }
             final hero = snapshot.data!.$1;
             final bgData = snapshot.data!.$2;
-            return VideoContainer(hero: hero, bgData: bgData);
+            final frameData = snapshot.data!.$3;
+
+            return VideoContainer(
+              hero: hero,
+              bgData: bgData,
+              frameData: frameData,
+            );
           }),
     );
   }

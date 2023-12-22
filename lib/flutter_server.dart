@@ -105,6 +105,7 @@ Future<List<int>> generateWidget({
       userHero ?? await binding.runAsync(() => getImage("assets/hero-1.png"));
   final bgData =
       await binding.runAsync(() => getImage("assets/bg-neighbourhood.png"));
+  final frameData = await binding.runAsync(() => getImage("assets/frame.png"));
 
   final widget = View(
     view: binding.platformDispatcher.implicitView!,
@@ -121,6 +122,7 @@ Future<List<int>> generateWidget({
               child: VideoContainer(
                 hero: hero!,
                 bgData: bgData!,
+                frameData: frameData!,
               ),
             ),
           ),
