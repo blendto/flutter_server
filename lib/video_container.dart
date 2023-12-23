@@ -7,7 +7,7 @@ class VideoContainer extends StatefulWidget {
 
   final ui.Image bgData;
 
-  final ui.Image frameData;
+  final ui.Image? frameData;
 
   const VideoContainer({
     super.key,
@@ -93,17 +93,18 @@ class VideoContainerState extends State<VideoContainer>
                       );
                     }),
               ),
-              Center(
-                child: Transform.scale(
-                  scale: 1.05,
-                  child: RawImage(
-                    image: widget.frameData,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
+              if (widget.frameData != null)
+                Center(
+                  child: Transform.scale(
+                    scale: 1.05,
+                    child: RawImage(
+                      image: widget.frameData,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
               Align(
                 alignment: Alignment.bottomLeft,
                 child: AnimatedBuilder(

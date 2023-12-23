@@ -32,6 +32,7 @@ shelf_router.Router generateRouter(TestWidgetsFlutterBinding binding) {
 
     final encodedImage = data["encodedImage"] as String;
     final userHero = await decodeImageFromList(base64Decode(encodedImage));
+    final useFrame = data["useFrame"] as bool;
 
     final out = await generateWidget(
       userHero: userHero,
@@ -41,6 +42,7 @@ shelf_router.Router generateRouter(TestWidgetsFlutterBinding binding) {
       outputFormat: "mp4",
       fps: 18,
       duration: const Duration(seconds: 10),
+      useFrame: useFrame,
     );
 
     return Response.ok(out, headers: {"Content-Type": "video/mp4"});
@@ -97,6 +99,7 @@ Future<List<int>> generateWidget({
   required String outputFormat,
   required int fps,
   required Duration duration,
+  required bool useFrame,
 }) async {
   renderSize ??= size;
   final GlobalKey key = GlobalKey();
@@ -105,7 +108,9 @@ Future<List<int>> generateWidget({
       userHero ?? await binding.runAsync(() => getImage("assets/hero-1.png"));
   final bgData =
       await binding.runAsync(() => getImage("assets/bg-neighbourhood.png"));
-  final frameData = await binding.runAsync(() => getImage("assets/frame.png"));
+  final frameData = useFrame
+      ? await binding.runAsync(() => getImage("assets/frame.png"))
+      : null;
 
   final widget = View(
     view: binding.platformDispatcher.implicitView!,
@@ -122,7 +127,7 @@ Future<List<int>> generateWidget({
               child: VideoContainer(
                 hero: hero!,
                 bgData: bgData!,
-                frameData: frameData!,
+                frameData: frameData,
               ),
             ),
           ),
