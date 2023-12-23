@@ -14,7 +14,7 @@ import 'package:shelf_router/shelf_router.dart' as shelf_router;
 
 import 'models/frames.dart';
 
-const port = 52244;
+const port = 52255;
 
 final outputFormatsMap = {
   "x-matroska": "matroska",
