@@ -11,7 +11,7 @@ class FrameItem {
 
   Future<List<int>> getByteData() async {
     final byteData =
-        await image.toByteData(format: ui.ImageByteFormat.rawUnmodified);
+        await image.toByteData(format: ui.ImageByteFormat.rawStraightRgba);
     image.dispose();
     return byteData!.buffer.asUint8List().toList(growable: false);
   }
