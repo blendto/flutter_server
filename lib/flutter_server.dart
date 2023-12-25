@@ -21,6 +21,19 @@ final outputFormatsMap = {
   "png": "image2",
 };
 
+Future<File> fileFromAsset(String key) async {
+  final byteData = await rootBundle.load('assets/gta6-intro.mp4');
+  final dir = Directory("outputs");
+  return (await File('${dir.path}/intro.mp4').create(recursive: true))
+      .writeAsBytes(byteData.buffer.asUint8List());
+}
+
+Future<File> createIntroFile() async {
+  final file = await fileFromAsset('assets/gta6-intro.mp4');
+  introCreateCompleter.complete(file);
+  return file;
+}
+
 shelf_router.Router generateRouter(TestWidgetsFlutterBinding binding) {
   final router = shelf_router.Router();
 
@@ -34,9 +47,12 @@ shelf_router.Router generateRouter(TestWidgetsFlutterBinding binding) {
     final userHero = await decodeImageFromList(base64Decode(encodedImage));
     final useFrame = data["useFrame"] as bool;
 
+    final introFile = await introCreateCompleter.future;
+
     final out = await generateWidget(
       userHero: userHero,
       binding: binding,
+      introFile: introFile,
       size: const Size(404, 720),
       renderSize: const Size(404, 720),
       outputFormat: "mp4",
@@ -71,6 +87,7 @@ void main() async {
   final binding = AutomatedTestWidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = null;
   loadFonts();
+  createIntroFile();
   testWidgets("Server Runner", (tester) async {
     final router = generateRouter(binding);
     final server =
@@ -85,6 +102,7 @@ void main() async {
 }
 
 final Completer<void> fontsLoadCompleter = Completer();
+final Completer<File> introCreateCompleter = Completer();
 
 Future<ui.Image> getImage(String key) async {
   final byteData = await rootBundle.load(key);
@@ -100,6 +118,7 @@ Future<List<int>> generateWidget({
   required int fps,
   required Duration duration,
   required bool useFrame,
+  required File introFile,
 }) async {
   renderSize ??= size;
   final GlobalKey key = GlobalKey();
@@ -155,7 +174,8 @@ Future<List<int>> generateWidget({
   hero.dispose();
   bgData.dispose();
   const directoryPrefix = 'outputs/temp';
-  const outputPath = '$directoryPrefix/output';
+  const outputPath = '$directoryPrefix/output.mp4';
+  const concatenated = '$directoryPrefix/output1.mp4';
 
   int index = 0;
   final tempDir = await Directory(directoryPrefix).create(recursive: true);
@@ -168,7 +188,7 @@ Future<List<int>> generateWidget({
   });
   await Future.wait(fileCreationFutures);
 
-  final process = await Process.run('ffmpeg', <String>[
+  final args = <String>[
     "-f",
     "image2",
     "-video_size",
@@ -177,9 +197,12 @@ Future<List<int>> generateWidget({
     'rgba',
     "-r",
     fps.toString(),
-    "-y",
     '-i',
     '$directoryPrefix/out-%04d.raw',
+    "-f",
+    "lavfi",
+    "-i",
+    "anullsrc",
     '-loop',
     '0',
     '-t',
@@ -188,6 +211,7 @@ Future<List<int>> generateWidget({
       '-vf',
       'split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse',
     ],
+    ...["-c:v", "copy", "-c:a", "aac", "-shortest", '-f'], // Adds silence
     '-f',
     outputFormatsMap[outputFormat] ?? outputFormat,
     '-vcodec',
@@ -199,11 +223,31 @@ Future<List<int>> generateWidget({
     '-brand',
     'mp42',
     outputPath,
+  ];
+  final process = await Process.run('ffmpeg', args);
+
+  final process1 = await Process.run('ffmpeg', [
+    "-i",
+    introFile.path,
+    "-i",
+    outputPath,
+    "-filter_complex",
+    "[0:v][0:a][1:v][1:a]concat=n=2:v=1:a=1[v][a]",
+    "-map",
+    '[v]',
+    "-map",
+    '[a]',
+    '-vcodec',
+    'libx264',
+    '-pix_fmt',
+    'yuvj420p',
+    concatenated,
+    "-y"
   ]);
 
   print(process.stderr);
-
-  final bytes = await File(outputPath).readAsBytes();
+  print(process1.stderr);
+  final bytes = await File(concatenated).readAsBytes();
 
   Future.microtask(() async {
     await tempDir.delete(recursive: true);
