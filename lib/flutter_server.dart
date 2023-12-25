@@ -253,8 +253,6 @@ Future<List<int>> generateWidget({
     "-y"
   ]);
 
-  print(process.stderr);
-  print(process1.stderr);
   final bytes = await File(concatenated).readAsBytes();
 
   Future.microtask(() async {
